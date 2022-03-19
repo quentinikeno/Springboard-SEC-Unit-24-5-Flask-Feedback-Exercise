@@ -59,11 +59,11 @@ def login_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        
+
         user = User.authenticate(username, password)
         if user:
+            flash(f"Welcome Back, {user.username}!", "primary")
             session['username'] = user.username
-            flash(f'Welcome back {user.username}!', 'success')
             return redirect('/secrets')
         else:
             form.username.errors = ['Invalid username/password.']

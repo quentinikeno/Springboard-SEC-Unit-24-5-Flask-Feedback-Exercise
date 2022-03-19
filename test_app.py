@@ -22,7 +22,7 @@ class UserViewsTestCase(TestCase):
         
         User.query.delete()
         
-        test_user_1 = User(username="testUser1", password="password", email="test@email.com", first_name="John", last_name="Smith")
+        test_user_1 = User.registerUser(username="testUser1", password="password", email="test@email.com", first_name="John", last_name="Smith")
         db.session.add(test_user_1)
         db.session.commit()
         
@@ -50,6 +50,7 @@ class UserViewsTestCase(TestCase):
             
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1 class="display-1">Sign Up</h1>', html)
+            self.assertIn('<form method="post">', html)
             
     def test_add_user(self):
         """Testing the adding of new user to db. POST request to /register."""
@@ -73,4 +74,49 @@ class UserViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1 class="display-1">Sign Up</h1>', html)
             self.assertIn('The username is already taken.  Please choose another.', html)
+            self.assertIsNone(session.get("username"))
+            
+    def test_login_form(self):
+        """Testing the /login route to show the login form."""
+        with app.test_client() as client:
+            resp = client.get("/login")
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">Log In</h1>', html)
+            self.assertIn('<form method="post">', html)
+            
+    def test_log_in_user(self):
+        """Testing logging in a user."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "password"}
+            resp = client.post("/login", data=data, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">You made it!</h1>', html)
+            self.assertEqual(f'{session.get("username")}', f'{self.test_user_1.username}')
+            
+    def test_log_in_invalid_username(self):
+        """Testing logging in a user with an invalid username."""
+        with app.test_client() as client:
+            data = {"username": "BobaFett", "password": "password"}
+            resp = client.post("/login", data=data, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">Log In</h1>', html)
+            self.assertIn('Invalid username/password.', html)
+            self.assertIsNone(session.get("username"))
+            
+    def test_log_in_invalid_password(self):
+        """Testing logging in a user with an invalid password."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "IncorrectPassword123"}
+            resp = client.post("/login", data=data, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">Log In</h1>', html)
+            self.assertIn('Invalid username/password.', html)
             self.assertIsNone(session.get("username"))
