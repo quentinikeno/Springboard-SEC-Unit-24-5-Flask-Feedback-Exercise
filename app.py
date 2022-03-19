@@ -3,7 +3,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User
 from sqlalchemy.exc import IntegrityError
 from crypt import methods
-from forms import UserRegistrationForm
+from forms import UserLoginForm, UserRegistrationForm
 from secret_keys import app_secret_key
 
 app = Flask(__name__)
@@ -51,6 +51,24 @@ def register_user():
         return redirect('/secrets')
     
     return render_template('register.html', form=form)
+
+@app.route('/login', methods=["GET", "POST"])
+def login_user():
+    """Show form to login users and add their username to the session."""
+    form = UserLoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        
+        user = User.authenticate(username, password)
+        if user:
+            session['username'] = user.username
+            flash(f'Welcome back {user.username}!', 'success')
+            return redirect('/secrets')
+        else:
+            form.username.errors = ['Invalid username/password.']
+            
+    return render_template('login.html', form=form)
 
 @app.route('/secrets')
 def show_secrets_page():
