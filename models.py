@@ -30,3 +30,12 @@ class User(db.Model):
     def __repr__(self):
         """Representation of User."""
         return f"<User username={self.username}>"
+    
+    @classmethod
+    def registerUser(cls, username, password, email, first_name, last_name):
+        """Hash password and create user."""
+        # hash password
+        hashed = bcrypt.generate_password_hash(password)
+        # turn bytestring into normal (unicode utf8) string
+        hashed_utf8 = hashed.decode("utf8")
+        return cls(username=username, password=hashed_utf8, email=email, first_name=first_name, last_name=last_name)
