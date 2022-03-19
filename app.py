@@ -25,9 +25,9 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register_user():
-     """Show form to register users and add them to the database."""
-     form = UserRegistrationForm()
-     if form.validate_on_submit():
+    """Show form to register users and add them to the database."""
+    form = UserRegistrationForm()
+    if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         email = form.email.data
@@ -42,10 +42,22 @@ def register_user():
             db.session.commit()
         except IntegrityError:
             # If there's an error adding username to db, show error and render register
-            form.username.errors.append('The username {{username}} is already taken.  Please choose another.')
+            form.username.errors.append('The username is already taken.  Please choose another.')
             return render_template('register.html', form=form)
         
-        session['user_id'] = new_user.id
+        session['username'] = new_user.username
+        
         flash(f'Thanks for joining {new_user.username}!  Your account has successfully been created!')
         return redirect('/secrets')
-        
+    
+    return render_template('register.html', form=form)
+
+@app.route('/secrets')
+def show_secrets_page():
+    """Show secret page if authorized."""
+    if 'username' not in session:
+        # If the user is not logged in/username not in session redirect to /register
+        flash("Please register or login first!", "danger")
+        return redirect('/register')
+
+    return render_template('secrets.html')
