@@ -35,7 +35,7 @@ def register_user():
         last_name = form.last_name.data
          
          # User register class method to hash password and create new user model instance
-        new_user = User.register(username, password, email, first_name, last_name)
+        new_user = User.registerUser(username, password, email, first_name, last_name)
         db.session.add(new_user)
          
         try:
