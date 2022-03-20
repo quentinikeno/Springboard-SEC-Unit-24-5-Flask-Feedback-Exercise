@@ -1,23 +1,40 @@
 {% extends 'base.html' %} {% block title %} {{user.username}} {% endblock %} {%
 block content %}
 <div class="card text-center">
-	<div class="card-body">
+	<div class="card-header">
 		<h1 class="card-title display-1">{{user.username}}</h1>
 		<h4 class="card-subtitle my-3">{{user.first_and_last_name}}</h4>
 		<h5 class="card-subtitle mb-3 text-muted">
 			<i class="fa-solid fa-envelope"></i> {{user.email}}
 		</h5>
+	</div>
+	<div class="card-body">
 		<ul class="list-group list-group-flush">
 			{% if feedback %} {% for f in feedback %}
 			<li class="list-group-item">
 				<h5 class="card-subtitle">{{f.title}}</h5>
 				<p>{{f.content}}</p>
+				<div>
+					<a
+						href="/feedback/{{feedback.id}}/update"
+						class="btn btn-info"
+						>Edit Feedback</a
+					>
+					<form
+						action="/feedback/{{feedback.id}}/update"
+						method="delete"
+						class="d-inline"
+					>
+						<button type="submit" class="btn btn-danger">
+							Delete Feedback
+						</button>
+					</form>
+				</div>
 			</li>
 			{% endfor %} {% else %}
 			<li class="list-group-item">No feedback yet!</li>
 			{% endif %}
 		</ul>
-		<a href="#" class="btn btn-primary">Go somewhere</a>
 	</div>
 </div>
 {% endblock %}
