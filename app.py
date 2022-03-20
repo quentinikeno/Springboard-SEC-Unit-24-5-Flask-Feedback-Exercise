@@ -40,16 +40,14 @@ def register_user():
          
         try:
             db.session.commit()
+            session['username'] = new_user.username
+            flash(f'Thanks for joining {new_user.username}!  Your account has successfully been created!', 'success')
+            return redirect(f'/users/{new_user.username}')
         except IntegrityError:
             # If there's an error adding username to db, show error and render register
             form.username.errors.append('The username is already taken.  Please choose another.')
             return render_template('register.html', form=form)
-        
-        session['username'] = new_user.username
-        
-        flash(f'Thanks for joining {new_user.username}!  Your account has successfully been created!')
-        return redirect('/secrets')
-    
+
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=["GET", "POST"])
@@ -64,21 +62,23 @@ def login_user():
         if user:
             flash(f"Welcome Back, {user.username}! You've been successfully logged in.", "success")
             session['username'] = user.username
-            return redirect('/secrets')
+            return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ['Invalid username/password.']
             
     return render_template('login.html', form=form)
 
-@app.route('/secrets')
-def show_secrets_page():
+@app.route('/users/<username>')
+def show_secrets_page(username):
     """Show secret page if authorized."""
     if 'username' not in session:
         # If the user is not logged in/username not in session redirect to /register
         flash("Please register or login first!", "danger")
         return redirect('/register')
 
-    return render_template('secrets.html')
+    user = User.query.get_or_404(username)
+    
+    return render_template('user_detail.html', user=user)
 
 @app.route('/logout', methods=["POST"])
 def logout_user():
