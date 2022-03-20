@@ -62,7 +62,7 @@ def login_user():
 
         user = User.authenticate(username, password)
         if user:
-            flash(f"Welcome Back, {user.username}!", "primary")
+            flash(f"Welcome Back, {user.username}! You've been successfully logged in.", "success")
             session['username'] = user.username
             return redirect('/secrets')
         else:
@@ -79,3 +79,10 @@ def show_secrets_page():
         return redirect('/register')
 
     return render_template('secrets.html')
+
+@app.route('/logout', methods=["POST"])
+def logout_user():
+    """Logout user."""
+    session.pop('username')
+    flash("You've been successfully logged out.", "info")
+    return redirect('/')
