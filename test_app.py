@@ -144,7 +144,7 @@ class UserViewsTestCase(TestCase):
         with app.test_client() as client:
             data = {"username": "testUser1", "password": "password"}
             client.post("/login", data=data, follow_redirects=True)
-            resp = client.delete(f"/users/testUser1/delete", follow_redirects=True)
+            resp = client.post(f"/users/testUser1/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
             
             self.assertEqual(resp.status_code, 200)
@@ -154,7 +154,7 @@ class UserViewsTestCase(TestCase):
     def test_deleting_user_not_logged_in(self):
         """Testing deleting a user when not logged in.  The user shouldn't be deleted."""
         with app.test_client() as client:
-            resp = client.delete(f"/users/{self.test_user_1.username}/delete", follow_redirects=True)
+            resp = client.post(f"/users/{self.test_user_1.username}/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
             
             self.assertEqual(resp.status_code, 401)

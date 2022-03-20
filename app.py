@@ -82,7 +82,7 @@ def show_secrets_page(username):
     
     return render_template('user_detail.html', user=user, feedback=user.feedback)
 
-@app.route('/users/<username>/delete', methods=["DELETE"])
+@app.route('/users/<username>/delete', methods=["POST"])
 def delete_user(username):
     """Delete user only if authorized."""
     if 'username' not in session:
