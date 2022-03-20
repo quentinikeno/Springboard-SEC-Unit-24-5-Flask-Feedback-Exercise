@@ -7,6 +7,15 @@ block content %}
 		<h5 class="card-subtitle mb-3 text-muted">
 			<i class="fa-solid fa-envelope"></i> {{user.email}}
 		</h5>
+		<form
+			action="/users/{{user.username}}/delete"
+			method="delete"
+			class="my-3"
+		>
+			<button type="submit" class="btn btn-danger">
+				Delete Your Account
+			</button>
+		</form>
 	</div>
 	<div class="card-body">
 		<ul class="list-group list-group-flush">
@@ -21,7 +30,7 @@ block content %}
 						>Edit Feedback</a
 					>
 					<form
-						action="/feedback/{{feedback.id}}/update"
+						action="/feedback/{{feedback.id}}/delete"
 						method="delete"
 						class="d-inline"
 					>

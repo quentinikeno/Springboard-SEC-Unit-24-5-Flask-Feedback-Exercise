@@ -82,6 +82,24 @@ def show_secrets_page(username):
     
     return render_template('user_detail.html', user=user, feedback=user.feedback)
 
+@app.route('/users/<username>/delete', methods=["DELETE"])
+def delete_user(username):
+    """Delete user only if authorized."""
+    if 'username' not in session:
+        # If the user is not logged in/username not in session redirect to /register
+        flash("You aren't allowed to do that!", "danger")
+        return redirect('/register')
+
+    user = User.query.get_or_404(username)
+    session.pop(user.username)
+    
+    db.session.delete(user)
+    db.session.commit()
+    
+    flash('Your account has successfully been deleted.', 'success')
+    
+    return render_template('user_detail.html', user=user, feedback=user.feedback)
+
 @app.route('/logout', methods=["POST"])
 def logout_user():
     """Logout user."""
