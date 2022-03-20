@@ -18,6 +18,8 @@ connect_db(app)
 
 toolbar = DebugToolbarExtension(app)
 
+#Routes for users
+
 @app.route('/')
 def index():
     """Redirect to /register."""
@@ -78,7 +80,7 @@ def show_secrets_page(username):
 
     user = User.query.get_or_404(username)
     
-    return render_template('user_detail.html', user=user)
+    return render_template('user_detail.html', user=user, feedback=user.feedback)
 
 @app.route('/logout', methods=["POST"])
 def logout_user():
@@ -86,3 +88,6 @@ def logout_user():
     session.pop('username')
     flash("You've been successfully logged out.", "info")
     return redirect('/')
+
+#Routes for feedback
+

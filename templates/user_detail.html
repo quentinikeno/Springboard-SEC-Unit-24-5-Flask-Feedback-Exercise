@@ -7,12 +7,16 @@ block content %}
 		<h5 class="card-subtitle mb-3 text-muted">
 			<i class="fa-solid fa-envelope"></i> {{user.email}}
 		</h5>
-		<p class="card-text my-3">
-			Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe
-			possimus laboriosam dignissimos magnam sit, ut earum necessitatibus
-			harum voluptas fugit commodi sed ipsam vero fuga iusto delectus
-			maiores, accusantium assumenda.
-		</p>
+		<ul class="list-group list-group-flush">
+			{% if feedback %} {% for f in feedback %}
+			<li class="list-group-item">
+				<h5 class="card-subtitle">{{f.title}}</h5>
+				<p>{{f.content}}</p>
+			</li>
+			{% endfor %} {% else %}
+			<li class="list-group-item">No feedback yet!</li>
+			{% endif %}
+		</ul>
 		<a href="#" class="btn btn-primary">Go somewhere</a>
 	</div>
 </div>
