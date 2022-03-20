@@ -70,3 +70,7 @@ class Feedback(db.Model):
     username = db.Column(db.String(20), db.ForeignKey("users.username"))
     
     user = db.relationship("User", backref="feedback")
+    
+    def __repr__(self):
+        """Representation of Feedback."""
+        return f"<Feedback id={self.id} title={self.title} content={self.content} username={self.username}>"
