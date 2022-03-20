@@ -31,6 +31,10 @@ class User(db.Model):
         """Representation of User."""
         return f"<User username={self.username}>"
     
+    def first_and_last_name(self):
+        """Return a user's first and last name."""
+        return f"{self.first_name} {self.last_name}"
+    
     @classmethod
     def registerUser(cls, username, password, email, first_name, last_name):
         """Hash password and create user."""
