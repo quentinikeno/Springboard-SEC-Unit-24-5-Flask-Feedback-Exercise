@@ -98,7 +98,7 @@ def delete_user(username):
     
     flash('Your account has successfully been deleted.', 'success')
     
-    return render_template('user_detail.html', user=user, feedback=user.feedback)
+    return redirect('/')
 
 @app.route('/logout', methods=["POST"])
 def logout_user():
