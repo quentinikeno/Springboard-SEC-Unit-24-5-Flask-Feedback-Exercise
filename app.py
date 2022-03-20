@@ -91,7 +91,7 @@ def delete_user(username):
         return render_template('401.html'), 401
 
     user = User.query.get_or_404(username)
-    session.pop(user.username)
+    session.pop('username')
     
     db.session.delete(user)
     db.session.commit()
