@@ -13,6 +13,7 @@
 		<title>{% block title %} {% endblock %}</title>
 	</head>
 	<body>
+		<section>{% include 'navbar.html' %}</section>
 		<main class="container my-5">
 			{% for category, msg in get_flashed_messages(with_categories=true)
 			%}
