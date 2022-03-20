@@ -31,6 +31,7 @@ class User(db.Model):
         """Representation of User."""
         return f"<User username={self.username}>"
     
+    @property
     def first_and_last_name(self):
         """Return a user's first and last name."""
         return f"{self.first_name} {self.last_name}"
@@ -61,7 +62,7 @@ class Feedback(db.Model):
     
     __tablename__ = "feedback"
     
-    id = db.Column(db.Integer, primary_key=True, auto_increment = True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement = True)
     
     title = db.Column(db.String(100), nullable=False)
     
@@ -69,7 +70,7 @@ class Feedback(db.Model):
     
     username = db.Column(db.String(20), db.ForeignKey("users.username"))
     
-    user = db.relationship("User", backref="feedback")
+    user = db.relationship("User", backref="feedback", cascade="all, delete-orphan")
     
     def __repr__(self):
         """Representation of Feedback."""
