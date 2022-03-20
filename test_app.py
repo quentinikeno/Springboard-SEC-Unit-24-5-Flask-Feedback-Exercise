@@ -60,7 +60,7 @@ class UserViewsTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('<h1 class="display-1">You made it!</h1>', html)
+            self.assertIn(f'<h1 class="card-title">testUser2</h1>', html)
             self.assertEqual(f'{User.query.get("testUser2")}', "<User username=testUser2>")
             self.assertEqual(f'{session["username"]}', 'testUser2')
             
@@ -94,7 +94,7 @@ class UserViewsTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('<h1 class="display-1">You made it!</h1>', html)
+            self.assertIn(f'<h1 class="card-title">{self.test_user_1.username}</h1>', html)
             self.assertEqual(f'{session.get("username")}', f'{self.test_user_1.username}')
             
     def test_log_in_invalid_username(self):
