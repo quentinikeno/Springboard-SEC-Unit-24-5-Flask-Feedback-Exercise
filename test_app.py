@@ -120,3 +120,15 @@ class UserViewsTestCase(TestCase):
             self.assertIn('<h1 class="display-1">Log In</h1>', html)
             self.assertIn('Invalid username/password.', html)
             self.assertIsNone(session.get("username"))
+            
+    def test_log_out(self):
+        """Testing logging out a user."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "password"}
+            client.post("/login", data=data, follow_redirects=True)
+            resp = client.post("/logout", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">Sign Up</h1>', html)
+            self.assertIsNone(session.get("username"))
