@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from app import app
 from flask import session
-from models import db, User
+from models import db, User, Feedback
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_feedback_test_db'
@@ -27,6 +27,12 @@ class UserViewsTestCase(TestCase):
         db.session.commit()
         
         self.test_user_1 = test_user_1
+        
+        feedback = Feedback(title='Test Feedback', content='This is only a test.', username=test_user_1.username)
+        db.session.add(feedback)
+        db.session.commit()
+        
+        self.feedback = feedback
         
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -60,7 +66,7 @@ class UserViewsTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn(f'<h1 class="card-title">testUser2</h1>', html)
+            self.assertIn(f'<h1 class="card-title display-1">testUser2</h1>', html)
             self.assertEqual(f'{User.query.get("testUser2")}', "<User username=testUser2>")
             self.assertEqual(f'{session["username"]}', 'testUser2')
             
@@ -94,7 +100,7 @@ class UserViewsTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn(f'<h1 class="card-title">{self.test_user_1.username}</h1>', html)
+            self.assertIn(f'<h1 class="card-title display-1">{self.test_user_1.username}</h1>', html)
             self.assertEqual(f'{session.get("username")}', f'{self.test_user_1.username}')
             
     def test_log_in_invalid_username(self):
@@ -132,3 +138,24 @@ class UserViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1 class="display-1">Sign Up</h1>', html)
             self.assertIsNone(session.get("username"))
+            
+    def test_deleting_user(self):
+        """Testing deleting a user."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "password"}
+            client.post("/login", data=data, follow_redirects=True)
+            resp = client.delete(f"/users/testUser1/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Your account has successfully been deleted.', html)
+            self.assertIsNone(session.get("username"))
+            
+    def test_deleting_user_not_logged_in(self):
+        """Testing deleting a user when not logged in.  The user shouldn't be deleted."""
+        with app.test_client() as client:
+            resp = client.delete(f"/users/{self.test_user_1.username}/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 401)
+            self.assertIn("<h1>You aren't authorized to do that.</h1>", html)

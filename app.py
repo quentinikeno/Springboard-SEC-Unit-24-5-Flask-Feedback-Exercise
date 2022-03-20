@@ -87,8 +87,8 @@ def delete_user(username):
     """Delete user only if authorized."""
     if 'username' not in session:
         # If the user is not logged in/username not in session redirect to /register
-        flash("You aren't allowed to do that!", "danger")
-        return redirect('/register')
+        flash("Please log in before deleting your user profile.", "danger")
+        return render_template('401.html'), 401
 
     user = User.query.get_or_404(username)
     session.pop(user.username)
@@ -109,3 +109,12 @@ def logout_user():
 
 #Routes for feedback
 
+#404 error handler
+@app.errorhandler(404)
+def not_found(e):
+  return render_template("404.html")
+
+#401 error handler
+@app.errorhandler(401)
+def not_found(e):
+  return render_template("401.html")
