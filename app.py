@@ -85,7 +85,6 @@ def show_secrets_page(username):
 def delete_user(username):
     """Delete user only if authorized."""
     if 'username' not in session:
-        # If the user is not logged in/username not in session redirect to /register
         flash("Please log in before deleting your user profile.", "danger")
         return render_template('401.html'), 401
 
@@ -109,10 +108,9 @@ def logout_user():
 #Routes for feedback
 
 @app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
-def show_feedback_form(username):
+def show_new_feedback_form(username):
     """Show feedback form and add to feedback to database."""
     if 'username' not in session or username != session['username']:
-        # If the user is not logged in/username not in session redirect to /register
         flash("Please log in before adding new feedback.", "danger")
         return render_template('401.html'), 401
     
@@ -129,6 +127,28 @@ def show_feedback_form(username):
         return redirect(f'/users/{username}')
     
     return render_template('add_feedback_form.html', form=form)
+
+@app.route('/feedback/<int:feedback_id>/update', methods=["GET", "POST"])
+def show_update_feedback_form(feedback_id):
+    """Show feedback update form and update feedback in database."""
+    feedback = Feedback.query.get_or_404(feedback_id)
+    
+    if 'username' not in session or feedback.username != session['username']:
+        flash("Please log in before editing feedback.", "danger")
+        return render_template('401.html'), 401
+    
+    form = FeedbackForm(obj=feedback)
+    if form.validate_on_submit():
+        feedback.title = form.title.data
+        feedback.content = form.content.data
+        
+        db.session.add(feedback)
+        db.session.commit()
+        
+        flash(f'Successfully updated {feedback.title}!', 'success')
+        return redirect(f'/users/{feedback.username}')
+    
+    return render_template('update_feedback_form.html', form=form)
 
 #404 error handler
 @app.errorhandler(404)
