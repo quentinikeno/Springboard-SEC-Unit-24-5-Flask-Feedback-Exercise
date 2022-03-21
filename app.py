@@ -1,9 +1,8 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User
+from models import Feedback, connect_db, db, User
 from sqlalchemy.exc import IntegrityError
-from crypt import methods
-from forms import UserLoginForm, UserRegistrationForm
+from forms import UserLoginForm, UserRegistrationForm, FeedbackForm
 from secret_keys import app_secret_key
 
 app = Flask(__name__)
@@ -108,6 +107,28 @@ def logout_user():
     return redirect('/')
 
 #Routes for feedback
+
+@app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
+def show_feedback_form(username):
+    """Show feedback form and add to feedback to database."""
+    if 'username' not in session or username != session['username']:
+        # If the user is not logged in/username not in session redirect to /register
+        flash("Please log in before adding new feedback.", "danger")
+        return redirect('/')
+    
+    form = FeedbackForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        
+        new_feedback = Feedback(title=title, content=content, username=username)
+        db.session.add(new_feedback)
+        db.session.commit()
+        
+        flash('Successfully created new feedback!', 'success')
+        return redirect(f'/users/{username}')
+    
+    return render_template('add_feedback_form.html')
 
 #404 error handler
 @app.errorhandler(404)

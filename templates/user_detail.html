@@ -18,6 +18,9 @@ block content %}
 		</form>
 	</div>
 	<div class="card-body">
+		<a href="/users/{{user.username}}/feedback/add" class="btn btn-primary"
+			>Add New Feedback!</a
+		>
 		<ul class="list-group list-group-flush">
 			{% if feedback %} {% for f in feedback %}
 			<li class="list-group-item">
@@ -31,7 +34,7 @@ block content %}
 					>
 					<form
 						action="/feedback/{{feedback.id}}/delete"
-						method="delete"
+						method="post"
 						class="d-inline"
 					>
 						<button type="submit" class="btn btn-danger">
