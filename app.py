@@ -150,6 +150,21 @@ def show_update_feedback_form(feedback_id):
     
     return render_template('update_feedback_form.html', form=form)
 
+@app.route('/feedback/<int:feedback_id>/delete', methods=["POST"])
+def delete_feedback(feedback_id):
+    """Delete Feedback from database."""
+    feedback = Feedback.query.get_or_404(feedback_id)
+    
+    if 'username' not in session or feedback.username != session['username']:
+        flash("Please log in before editing feedback.", "danger")
+        return render_template('401.html'), 401
+    
+    db.session.delete(feedback)
+    db.session.commit()
+    
+    flash('Successfully deleted feedback!', 'success')
+    return redirect(f'/users/{session["username"]}')
+
 #404 error handler
 @app.errorhandler(404)
 def not_found(e):
