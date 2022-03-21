@@ -265,3 +265,12 @@ class FeedbackViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Successfully deleted feedback!', html)
             self.assertNotIn('<h5 class="card-subtitle">Test Feedback</h5>', html)
+            
+    def test_deleting_feedback_not_logged_in(self):
+        """Testing deleting feedback when not logged in.  Should result in a 401."""
+        with app.test_client() as client:
+            resp = client.post(f"feedback/{self.feedback_id}/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 401)
+            self.assertIn('Please log in before deleting feedback.', html)
