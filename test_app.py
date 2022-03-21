@@ -232,7 +232,7 @@ class FeedbackViewsTestCase(TestCase):
             self.assertIn('<h1 class="display-1">Update Feedback</h1>', html)
             
     def test_updating_feedback(self):
-        """Testing updating new feedback to database."""
+        """Testing updating new feedback."""
         with app.test_client() as client:
             data = {"username": "testUser1", "password": "password"}
             client.post("/login", data=data, follow_redirects=True)
@@ -243,6 +243,16 @@ class FeedbackViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn(f'Successfully updated {feedback.get("title")}!', html)
             self.assertIn('<h5 class="card-subtitle">Updating Feedback</h5>', html)
+            
+    def test_updating_feedback_not_logged_in(self):
+        """Testing updating new feedback when not logged in.  Should result in a 401."""
+        with app.test_client() as client:
+            feedback = {"title": "Updating Feedback", "content": "This is to test updating feedback."}
+            resp = client.post(f"feedback/{self.feedback_id}/update", data=feedback, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 401)
+            self.assertIn('Please log in before editing feedback.', html)
             
     def test_deleting_feedback(self):
         """Testing deleting feedback."""
