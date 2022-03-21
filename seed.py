@@ -4,7 +4,7 @@ from models import User, Feedback
 db.drop_all()
 db.create_all()
 
-han = User.registerUser('HanSolo', 'Chewie', 'ishotfirst@gmail.com', 'Han', 'Solo')
+han = User.registerUser('HanSolo', 'Chewie', 'shotfirst@gmail.com', 'Han', 'Solo')
 alison = User.registerUser('tooManyGhosts', 'Mike', 'buttonhouse@email.com', 'Alison', 'Cooper')
 
 db.session.add_all([han, alison])

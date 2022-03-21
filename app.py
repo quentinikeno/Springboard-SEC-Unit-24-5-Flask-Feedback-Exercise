@@ -114,7 +114,7 @@ def show_feedback_form(username):
     if 'username' not in session or username != session['username']:
         # If the user is not logged in/username not in session redirect to /register
         flash("Please log in before adding new feedback.", "danger")
-        return redirect('/')
+        return render_template('401.html'), 401
     
     form = FeedbackForm()
     if form.validate_on_submit():
@@ -128,7 +128,7 @@ def show_feedback_form(username):
         flash('Successfully created new feedback!', 'success')
         return redirect(f'/users/{username}')
     
-    return render_template('add_feedback_form.html')
+    return render_template('add_feedback_form.html', form=form)
 
 #404 error handler
 @app.errorhandler(404)

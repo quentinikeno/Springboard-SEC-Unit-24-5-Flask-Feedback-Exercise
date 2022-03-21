@@ -18,7 +18,7 @@ class UserViewsTestCase(TestCase):
     """Test views for Users"""
     
     def setUp(self):
-        """Add a test user."""
+        """Add a test user and feedback."""
         
         User.query.delete()
         
@@ -159,3 +159,62 @@ class UserViewsTestCase(TestCase):
             
             self.assertEqual(resp.status_code, 401)
             self.assertIn("<h1>You aren't authorized to do that.</h1>", html)
+            
+class FeedbackViewsTestCase(TestCase):
+    """Test views for Feedback"""
+    
+    def setUp(self):
+        """Add a test user and feedback."""
+        
+        User.query.delete()
+        
+        test_user_1 = User.registerUser(username="testUser1", password="password", email="test@email.com", first_name="John", last_name="Smith")
+        db.session.add(test_user_1)
+        db.session.commit()
+        
+        self.test_user_1 = test_user_1
+        
+        feedback = Feedback(title='Test Feedback', content='This is only a test.', username=test_user_1.username)
+        db.session.add(feedback)
+        db.session.commit()
+        
+        self.feedback = feedback
+        
+    def tearDown(self):
+        """Clean up any fouled transaction."""
+
+        db.session.rollback()
+        
+    def test_show_feedback_form(self):
+        """Testing showing the new feedback form."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "password"}
+            client.post("/login", data=data, follow_redirects=True)
+            resp = client.get("/users/testUser1/feedback/add")
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1 class="display-1">Add New Feedback for testUser1</h1>', html)
+            
+    def test_adding_feedback(self):
+        """Testing adding new feedback to database."""
+        with app.test_client() as client:
+            data = {"username": "testUser1", "password": "password"}
+            client.post("/login", data=data, follow_redirects=True)
+            feedback = {"title": "Adding new Feeback", "content": "This is to test adding new feedback."}
+            resp = client.post("/users/testUser1/feedback/add", data=feedback, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Successfully created new feedback!', html)
+            self.assertIn('<h5 class="card-subtitle">Adding new Feeback</h5>', html)
+            
+    def test_adding_feedback_not_logged_in(self):
+        """Testing adding new feedback when not logged in.  Should result in a 401."""
+        with app.test_client() as client:
+            feedback = {"title": "Adding new Feeback", "content": "This is to test adding new feedback."}
+            resp = client.post("/users/testUser1/feedback/add", data=feedback, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            
+            self.assertEqual(resp.status_code, 401)
+            self.assertIn('Please log in before adding new feedback.', html)
