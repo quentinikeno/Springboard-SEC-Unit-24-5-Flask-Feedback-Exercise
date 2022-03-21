@@ -16,24 +16,22 @@ block content %}
 				Delete Your Account
 			</button>
 		</form>
-	</div>
-	<div class="card-body">
 		<a href="/users/{{user.username}}/feedback/add" class="btn btn-primary"
 			>Add New Feedback!</a
 		>
+	</div>
+	<div class="card-body">
 		<ul class="list-group list-group-flush">
 			{% if feedback %} {% for f in feedback %}
 			<li class="list-group-item">
 				<h5 class="card-subtitle">{{f.title}}</h5>
 				<p>{{f.content}}</p>
 				<div>
-					<a
-						href="/feedback/{{feedback.id}}/update"
-						class="btn btn-info"
+					<a href="/feedback/{{f.id}}/update" class="btn btn-info"
 						>Edit Feedback</a
 					>
 					<form
-						action="/feedback/{{feedback.id}}/delete"
+						action="/feedback/{{f.id}}/delete"
 						method="post"
 						class="d-inline"
 					>
